@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<!--[if lte IE 8 ]><html lang="ru" class="ie8"><![endif]-->
+<!--[if (gt IE 8)|!(IE)]><!-->
+<html lang="ru" class="new">
+<!--<![endif]-->
+<head>
+<!-- demo -->
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Параметры оплаты</title>
+
+<link href="CyberPOS21/css/cyberflat.css" rel="stylesheet" type="text/css">
+<link href="CyberPOS21/css/brands/9m3040.css" rel="stylesheet">
+
+<script src="CyberPOS21/js/vendors.js" type="text/javascript"></script>
+<script src="CyberPOS21/js/brands/9m3040.js" type="text/javascript"></script>
+<!-- <script src="CyberPOS21/js/brands/{shop}.js" type="text/javascript"></script> -->
+<script type="text/javascript">
+
+$(document).ready(function($) {
+
+
+	// js work!!!
+	document.getElementsByTagName('body')[0].className = 'js';
+
+	// Style all <select> elements
+	$('select').uniform({selectAutoWidth : false});
+
+	// Change logo of Issuing network
+	$('#card_type').on('change', function() {
+		$('#card_type').parent().removeClass( 'VI EU CM MI' ).addClass($('#card_type').val());
+	});
+	$( "#card_type" ).focus().blur(); // this fix problem with padding in chrome
+
+	// Fixing same value
+	var target = fixLink('http://beeline.ru');
+	if (target != null){
+		$('#listlink').text(target);
+		$('#headlink, #listlink').attr('href', 'https://' + target );
+	} else {
+		$('.shop').hide();
+	}
+
+	$('.price span').text(fixPrice('10029') + ' ' + translate['RUR'] );
+
+	// Init and start timer
+	var hurry = new CountDown();
+	hurry.minutes = 14;
+	hurry.seconds = 38;
+	hurry.timeOut = function() {
+		alert('ВРЕМЯ СЕССИИ ИСТЕКЛО!');
+		window.location.replace('http://192.168.6.193/shop/result.cgi?a=111&b=11sadфывфы');
+	};
+	hurry.Start();
+
+	// Setup modal
+	$('.gethelp').magnificPopup({
+		removalDelay: 300,
+		mainClass: 'mfp-fade',
+		fixedContentPos: false,
+		type:'inline',
+		midClick: true
+	});
+
+	// Add masks
+	if(navigator.userAgent.match(/Android.*Firefox/i) == null) {
+		$('#card_number').inputmask({
+			mask: '9999  9999  9999  9999  999',
+			placeholder: ' ',
+			onKeyUp: function (result) {
+				// Autodetection card type
+				var check = cardType(document.getElementById("card_number").value);
+				if (check != undefined){
+					$('#card_type').val(check);
+				} else {
+					$('#card_type').val('');
+				}
+				$('#card_type').parent().removeClass( 'VI EU CM MI' ).addClass($('#card_type').val()); // change logo of Issuing network
+				$.uniform.update();
+			}
+		});
+
+		$('#card_code').removeAttr('maxlength');
+		$('#card_code').inputmask({
+			mask: '999',
+			placeholder: ' '
+		});
+	}
+
+
+// Post card atributs in document: MI, VI, EU, CM
+var availableCardTypes = 'VI:Visa;EU:EuroCard/MasterCard;CM:Maestro;MI:Mir' || 'VI:Visa;EU:Mastercard;CM:Maestro';
+
+$('#card_type').children().remove();
+$('#card_type').append('<option selected></option>'); var pairs = availableCardTypes.split(/;/);for (var i = 0; i < pairs.length; i++) {
+    var cardTypeAttributes = pairs[i].split(/:/);
+    if (cardTypeAttributes && cardTypeAttributes.length == 2) {
+        $('#card_type').append('<option value="' + cardTypeAttributes[0] + '">' + cardTypeAttributes[1] +  '</option>');
+    }
+}
+
+
+
+	// Reset form
+	$('#clear').click(function(){
+		$('#pay')[0].reset();
+		$.uniform.update();
+		$('#card_type').parent().removeClass( 'VI EU CM MI' ); // clear logo of Issuing network
+	});
+
+	// Setup validating
+	$('#pay').validate({
+		highlight: function(element) {
+			$(element).parent().addClass('error');
+		},
+		unhighlight: function(element) {
+			$(element).parent().removeClass('error');
+		},
+		errorPlacement: function (error, element) {
+			if (element[0].tagName == 'SELECT')
+				error.insertAfter(element.parent());
+			else
+				error.insertAfter(element);
+		},
+		submitHandler: function( form ) {
+			if(navigator.userAgent.match(/Android.*Firefox/i) == null) {
+				$('#card_number').inputmask('remove');
+			}
+			$(':submit').attr('disabled', 'disabled');
+			$(':submit').html('Ожидание');
+			hurry.Stop(); // stop timer
+			form.submit();
+		}
+	});
+
+});
+
+</script>
+
+</head>
+
+<body class="no-js">
+
+	<div class="wrapper cf card">
+
+	<div class="topbar">
+
+		<div class="container">
+			<li class="title"><span class="s-hidden">Платежная система </span>CyberPlat</li>
+			<li class="subtitle  m-hidden s-hidden">Авторизационный сервер</li>
+			<li id="timer">14 : 38</li>
+		</div>
+
+	</div>
+
+	<!-- START: place for brand of store -->
+	<div class="header">
+		<a class="container" href="http://beeline/shop/result.cgi?a=111&b=11sadфывфы" id="headlink">
+			<div class="sec_1"></div>
+			<div class="sec_2"></div>
+			<div class="sec_3"></div>
+			<div class="sec_4"></div>
+		</a>
+	</div>
+	<!-- END: place for brand of store -->
+
+	<div class="content">
+
+		<div class="container  cf">
+
+			<div class="caption">
+				<h1>Ввод реквизитов <br>
+					платежного средства
+				</h1>
+				<div class="cyberlogo ">
+					<span class="m-hidden s-hidden">Крупнейшая система<br> электронных платежей в России</span>
+				</div>
+			</div>
+
+			<div class="l-grid-6 l-padded-right">
+
+				<!-- <form name="inform" id="pay" method="post" target='_top' autocomplete="off"> -->
+				<form name="inform" id="pay" method="post" autocomplete="off">
+
+					<input type=hidden name=version	value="2.0">
+					<input type=hidden name=sid 	value="376828248">
+					<input type=hidden name=lang 	value="ru">
+					<input type=hidden name=shop 	value="9m1112">
+					<input type=hidden name=url 	value="http://192.168.6.193/shop/result.cgi?a=111&b=11sadфывфы">
+					<input type=hidden name=orderid value="2017951451369938">
+					<input type=hidden name=amount 	value="10029">
+					<input type=hidden name=cur 	value="RUR">
+					<input type=hidden name=dgst 	value="b8d1ad5d78d8a2c4c4b6855940109b4f">
+					<input type=hidden name=next 	value="5">
+
+					<div class="panel cf">
+
+						<div class="control">
+							<label for="card_number">Номер карты <a href="#help_number" class="gethelp">подробнее</a></label>
+							<input tabindex="11" name="pan" type="tel" id="card_number"
+								required
+								data-msg-required="Это поле обязательно" >
+						</div>
+
+						<div class="control">
+							<label for="card_type" >Тип карты <a href="#help_type" class="gethelp">подробнее</a></label>
+							<select tabindex="12" name="cardtype" id="card_type"
+								required
+								data-msg-required="Выберите тип карты" >
+								<OPTION selected></OPTION>
+								<OPTION value="VI">Visa</OPTION>
+								<OPTION value="EU">MasterCard</OPTION>
+								<OPTION value="CM">Maestro</OPTION>
+								<OPTION value="MI">Мир</OPTION>
+							</select>
+							
+
+						<!-- <div class='myOption'>
+							<div data-val="VI">Visa</div>
+							<div data-val="EU">MasterCard</div>
+							<div data-val="CM">Maestro</div>
+							<div data-val="MI">Мир</div>
+						</div> -->
+
+						</div>
+
+						<div class="control">
+							<label for="card_user">Имя и фамилия держателя <a href="#help_holder" class="gethelp">подробнее</a></label>
+							<input tabindex="13" type="text" name="cardholder" id="card_holder"
+								required
+								data-msg-required="Это поле обязательно" >
+						</div>
+
+						<div class="control cf">
+							<label>Срок действия <a href="#help_date" class="gethelp">подробнее</a></label>
+							<div class="card_date cf">
+								<div class="grid-6 padded-right">
+									<select tabindex="14" name="month"
+										required
+										data-msg-required="Выберите месяц" >
+										<OPTION selected></OPTION>
+										<OPTION value=01>01</OPTION>
+										<OPTION value=02>02</OPTION>
+										<OPTION value=03>03</OPTION>
+										<OPTION value=04>04</OPTION>
+										<OPTION value=05>05</OPTION>
+										<OPTION value=06>06</OPTION>
+										<OPTION value=07>07</OPTION>
+										<OPTION value=08>08</OPTION>
+										<OPTION value=09>09</OPTION>
+										<OPTION value=10>10</OPTION>
+										<OPTION value=11>11</OPTION>
+										<OPTION value=12>12</OPTION>
+									</select>
+								</div>
+								<div class="grid-6 padded-left">
+									<select tabindex="15" name="year"
+										required
+										data-msg-required="Выберите год" >
+										<OPTION selected ></OPTION>
+										<OPTION value=2017>2017</OPTION>
+										<OPTION value=2018>2018</OPTION>
+										<OPTION value=2019>2019</OPTION>
+										<OPTION value=2020>2020</OPTION>
+										<OPTION value=2021>2021</OPTION>
+										<OPTION value=2022>2022</OPTION>
+										<OPTION value=2023>2023</OPTION>
+										<OPTION value=2024>2024</OPTION>
+										<OPTION value=2025>2025</OPTION>
+										<OPTION value=2026>2026</OPTION>
+										<OPTION value=2027>2027</OPTION>
+										<OPTION value=2028>2028</OPTION>
+										<OPTION value=2029>2029</OPTION>
+										<OPTION value=2030>2030</OPTION>
+										<OPTION value=2031>2031</OPTION>
+										<OPTION value=2032>2032</OPTION>
+										<OPTION value=2033>2033</OPTION>
+										<OPTION value=2034>2034</OPTION>
+									</select>
+								</div>
+							</div>
+						</div>
+
+						<div class="control">
+							<label for="card_code">Код CVC2/CVV2 <a href="#help_code" class="gethelp">подробнее</a></label>
+							<input tabindex="16" name="cvv" type="tel" maxlength="3" id="card_code"
+								required
+								data-msg-required="Это поле обязательно"
+								data-rule-minlength="3"
+								data-msg-minlength="Необходимо ввести 3 цифры" >
+							<p class="help">Кодом CVC2/CVV2 являются 3 последних цифры на оборотной стороне карты </p>
+						</div>
+
+					</div>
+
+					<div class="panel cf">
+						<div class="control grid-6 padded-right">
+							<button tabindex="19" id="sbm" type="submit" class="primary">Оплатить</button>
+						</div>
+						<div class="control grid-6 padded-left">
+							<button type="reset" id="clear" class="warning">Очистить</button>
+						</div>
+					</div>
+
+				</form>
+
+			</div>
+
+			<div class="l-grid-6 l-padded-left">
+
+				<ul class="group">
+					<li class="order"> <b>Номер заказа:</b> <span>2017951451369938</span> </li>
+					<li class="price"> <b>Сумма к оплате:</b> <span>10029 RUR</span> </li>
+					<li class="shop"> <b>Интернет магазин:</b> <span><a id="listlink" href="http://192.168.6.193/shop/result.cgi?a=111&b=11sadфывфы">http://192.168.6.193/shop/result.cgi?a=111&b=11sadфывфы</a></span> </li>
+					<li class="target"> <b>Назначение платежа:</b> <span>Оплата заказа №2017951451369938 </span> </li>
+				</ul>
+
+				<p>Информация, сообщаемая вами в Платежную систему CyberPlat® («КиберПлат»), не может быть перехвачена или сообщена третьей стороне.</p>
+
+			</div>
+
+		</div>
+
+		<div id="help_type" class="popup mfp-hide">
+			<h2>Тип карты</h2>
+			<p>Система электронных платежей КиберПлат принимает карты Visa, MasterCard и Maestro.</p>
+			<img src="CyberPOS21/img/help_type.png">
+		</div>
+
+		<div id="help_number" class="popup mfp-hide">
+			<h2>Индивидуальный номер карты</h2>
+			<p>Расположен на лицевой стороне карты чуть выше имени ее владельца. Как правило, состоит из 16 цифр, разделенных на 4 блока по 4 цифры.
+			На отдельных видах карт номер содержит 13,18 и даже 19 цифр.</p>
+			<img src="CyberPOS21/img/help_number.png">
+		</div>
+
+		<div id="help_holder" class="popup mfp-hide">
+			<h2>Имя и фамилия держателя</h2>
+			<p>Расположены на лицевой стороне карты.</p>
+			<img src="CyberPOS21/img/help_holder.png">
+		</div>
+
+		<div id="help_date" class="popup mfp-hide">
+			<h2>Срок действия</h2>
+			<p>Расположен на лицевой стороне карты.</p>
+			<img src="CyberPOS21/img/help_date.png">
+		</div>
+
+		<div id="help_code" class="popup mfp-hide">
+			<h2>Код CVV2/CVC2</h2>
+			<p>Cостоит из трех цифр. Печатается на обратной стороне карты, на полосе для подписи,
+			сразу после номера карты, либо после последних 4 цифр номера карты.</p>
+			<img src="CyberPOS21/img/help_code.png">
+		</div>
+
+	</div>
+
+	<div class="footer">
+		<div class="container">
+			<div class="l-grid-6 l-padded-right">
+				<img src="CyberPOS21/img/secure_logo.png">
+			</div>
+		</div>
+	</div>
+
+
+</div>
+</body>
+</html>
